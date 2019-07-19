@@ -1,0 +1,34 @@
+/*
+Sets a view as the Project Starting View.
+TESTED REVIT API: 2018
+The snippet can be used as is in a Revit Application Macro for test purposes
+Author: Deyan Nenov | github.com/ArchilizerLtd | www.archilizer.com 
+This file is shared on www.revitapidocs.com
+For more information visit http://github.com/gtalarico/revitapidocs
+License: http://github.com/gtalarico/revitapidocs/blob/master/LICENSE.md
+*/
+/// <summary>
+		/// Sets the starting view
+		/// </summary>
+		public void SetStartingView()
+		{
+			UIDocument uidoc = this.ActiveUIDocument;
+			Document doc = this.ActiveUIDocument.Document;
+			
+			var startView = new FilteredElementCollector(doc)
+				.OfClass(typeof(StartingViewSettings));
+			
+			var legend = new FilteredElementCollector(doc)
+				.OfCategory(BuiltInCategory.OST_Views)
+				.Cast<View>()
+				.FirstOrDefault(v => v.Name.Equals("_ISSUE SHEET"));
+			
+			StartingViewSettings startViewSettings = startView.First() as StartingViewSettings;
+			
+			using(Transaction t = new Transaction(doc, "Set Starting View"))
+			{
+				t.Start();
+				startViewSettings.ViewId = legend.Id;					
+				t.Commit();
+			}		
+		}
